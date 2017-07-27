@@ -1,0 +1,17 @@
+<% include ../header.ejs %>
+    <form action="" method="post">
+     <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+        <table class="table table-bordered">
+            <tr>
+                <th>제품명</th>
+                <td><input type="text" name="name" class="form-control" value="<%=contacts.name%>"/></td>
+            </tr>
+            <tr>
+                <th>설명</th>
+                <td><input type="text" name="comment" class="form-control" value="<%=contacts.comment%>"/></td>
+            </tr>
+        </table>
+        <button class="btn btn-primary">작성하기</button>
+    </form>
+
+<% include ../footer.ejs %>
