@@ -8,7 +8,7 @@ var LocalStrategy = require('passport-local').Strategy;
 
 
 // << 정책작성 >>
-// function 으로 부터 넘어온 user를 done(null, user)에 담음
+// UsersModel.findOne를 통해 넘어온 user를 done(null, user)에 담음
 passport.serializeUser(function (user, done) {
     console.log('serializeUser');
     done(null, user);
@@ -69,7 +69,7 @@ router.post('/login' , // 위에서 만든 passport 정책을 실행 'local' - >
     }), 
     // 위에 미들웨어를 정상적으로 통과하면 아래 실행
     function(req, res){
-        res.send('<script>alert("로그인 성공");location.href="/accounts/success";</script>');
+        res.send('<script>alert("로그인 성공");location.href="/";</script>'); // 성공시 /accounts/success url을 root url로 변경
     }
 );
 

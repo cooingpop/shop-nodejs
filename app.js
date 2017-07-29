@@ -39,6 +39,9 @@ autoIncrement.initialize(connect);
 var admin = require('./routes/admin');
 var contacts = require('./routes/contacts');
 var accounts = require('./routes/accounts');
+var auth = require('./routes/auth');
+var home = require('./routes/home');
+var chat = require('./routes/chat');
 
 var app = express();
 var port = 3000;
@@ -77,16 +80,41 @@ app.use(passport.session());
 //플래시 메시지 관련
 app.use(flash());
 
+//로그인 정보 뷰에서만 변수로 셋팅, 전체 미들웨어는 router위에 두어야 에러가 안난다
+// view에서 사용되는 글로벌 변수
+app.use(function(req, res, next) {
+    // view에서 isLogin 변수를 사용하면 어디서든 사용 가능.
+  app.locals.isLogin = req.isAuthenticated();
+    //app.locals.urlparameter = req.url; //현재 url 정보를 보내고 싶으면 이와같이 셋팅
+    //app.locals.userData = req.user; //사용 정보를 보내고 싶으면 이와같이 셋팅
 
-app.get('/', function (req, res) {
-    res.send('first page : Hello ~');
+  next(); // 제어권을 다음으로 넘김
 });
 
-// routing
+
+
+// routing 등록
 app.use('/admin', admin);
 app.use('/contacts', contacts);
 app.use('/accounts', accounts);
+app.use('/auth', auth);
+// auth 라우팅을 사용할때 auth 파일을 참조
+app.use('/', home);
+app.use('/chat', chat);
 
-app.listen(port, function () {
-    console.log('Express listening in port', port);
-})
+
+
+var server = app.listen( port, function(){
+    console.log('Express listening on port', port);
+});
+
+var listen = require('socket.io');
+var io = listen(server);
+require('./libs/socketConnection')(io); // 모듈 분리
+
+/* 
+    위에 require('./libs/socketConnection')(io); 와 동일한 뜻
+    ->
+    var socket = require('./libs/socketConnection');
+    socket(io);
+*/

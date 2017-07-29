@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router()
 var ProductsModel = require('../models/ProductsModel');
 var CommentsModel = require('../models/CommentsModel');
+var loginRequired = require('../libs/loginRequired');
 
 // csrf 셋팅
 var csrf = require('csurf');
@@ -41,7 +42,7 @@ router.get('/products', function (req, res) {
 
 // url 에서 '/' 루트를 의미하는 문자 꼭 앞에 사용!
 // view render 할 때는 루트를 입력하지 않음.
-router.get('/products/write', csrfProtection , function(req,res){
+router.get('/products/write', loginRequired, csrfProtection , function(req,res){
     //edit에서도 같은 form을 사용하므로 빈 변수( product )를 넣어서 에러를 피해준다
     res.render( 'admin/form' , { product : "", csrfToken : req.csrfToken() }); 
 }); 
@@ -50,7 +51,8 @@ router.get('/products/write', csrfProtection , function(req,res){
 //    <form action="" method="post"> 일 경우 post 로 처리
 // csrfProtection를 통해 먼저 검사
 // uplode.single 업로드 파일 1개만 들어오도록
-router.post('/products/write', upload.single('thumbnail') , csrfProtection,  function (req, res) {
+// 글 작성 시 로그인이 안되어 있으면 loginRequired 미들웨어를 통해 로그인 페이지로 이동
+router.post('/products/write', loginRequired, upload.single('thumbnail') , csrfProtection,  function (req, res) {
     // console.log(req.file);
     // 스키마 만드는 부분임
     var product = new ProductsModel({
@@ -59,7 +61,9 @@ router.post('/products/write', upload.single('thumbnail') , csrfProtection,  fun
         name: req.body.name,
         thumbnail : (req.file) ? req.file.filename : "", // request에 file 객체가 있는지 확인
         price: req.body.price,
-        description: req.body.description
+        description: req.body.description,
+        username : req.user.username,
+        displayname : req.user.displayname
     });
 
     var validationError = product.validateSync();
@@ -94,7 +98,7 @@ router.get('/products/detail/:id', function (req, res) {
     });
 });
 // 받는 쪽에서 token을 넣어줌. csrfToken 변수 값에 req.csrfToken() 초기화.
-router.get('/products/edit/:id', csrfProtection , function(req, res){
+router.get('/products/edit/:id', loginRequired, csrfProtection , function(req, res){
     //기존에 폼에 value안에 값을 셋팅하기 위해 만든다.
     ProductsModel.findOne({ id : req.params.id } , function(err, product){
         res.render('admin/form', { product : product, csrfToken : req.csrfToken() });
@@ -105,7 +109,7 @@ router.get('/products/edit/:id', csrfProtection , function(req, res){
 // upload.single 도 미들웨어
 // 마지막 요청 : callback // 마지막 요청 전 중간에서 처리하는 부분을 미들웨어라고 함.
 // upload.single('thumbnail') -> request에 세팅해줌
-router.post('/products/edit/:id',  upload.single('thumbnail') , csrfProtection, function(req, res) {
+router.post('/products/edit/:id', loginRequired, upload.single('thumbnail') , csrfProtection, function(req, res) {
 
     // 그전에 지정되어있는 파일명을 받아온다
     // 수정시 파일을 선택하지 않으면 "" 빈 값이 들어가므로 DB에서 thumbnail 값이 ""로 변경되기 때문에 먼저 파일명을 받아온다.
@@ -123,6 +127,8 @@ router.post('/products/edit/:id',  upload.single('thumbnail') , csrfProtection, 
             thumbnail : (req.file) ? req.file.filename : product.thumbnail,
             price : req.body.price,
             description : req.body.description,
+            username : req.user.username,
+            displayname : req.user.displayname
         };
     
         //update의 첫번째 인자는 조건, 두번째 인자는 바뀔 값들
