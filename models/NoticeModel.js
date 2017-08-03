@@ -2,8 +2,9 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var autoIncrement = require('mongoose-auto-increment');
 
-var ContactsSchema = new Schema({
-    content : String,
+var NoticeSchema = new Schema({
+    subject : String,
+    contents : String,
     create_at : {
         type : Date,
         default : Date.now()
@@ -11,11 +12,11 @@ var ContactsSchema = new Schema({
     contact_id : Number
 });
 
-ContactsSchema.plugin(autoIncrement.plugin,
+NoticeSchema.plugin(autoIncrement.plugin,
     {
-        model : "contacts",
+        model : "boards",
         field : "id",
         startAt : 1
     }
 );
-module.exports = mongoose.model("contacts", ContactsSchema);
+module.exports = mongoose.model("boards", NoticeSchema);

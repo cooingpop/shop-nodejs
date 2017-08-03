@@ -3,6 +3,11 @@ var router = express.Router()
 var ProductsModel = require('../models/ProductsModel');
 var CommentsModel = require('../models/CommentsModel');
 var loginRequired = require('../libs/loginRequired');
+var co = require('co');
+
+// 저 next를 대신 다해주고
+// return으로 한번에 다 반환해주는 함수는 없을까? -> 'co' library
+
 
 // csrf 셋팅
 var csrf = require('csurf');
@@ -77,6 +82,7 @@ router.post('/products/write', loginRequired, upload.single('thumbnail') , csrfP
     }
 });
 
+/*
 // post 는 req.query 로 받을 수 있음.
 // : 콜론은 파라미터
 router.get('/products/detail/:id', function (req, res) {
@@ -97,6 +103,22 @@ router.get('/products/detail/:id', function (req, res) {
         });        
     });
 });
+*/
+// 위에 get('/products/detail/:id') 메서드를 -> generator 함수로 변경 , 바로 아래
+
+router.get('/products/detail/:id' , function(req, res){
+    var getData = co(function* (){
+        return {
+            product : yield ProductsModel.findOne( { 'id' :  req.params.id }).exec(),
+            comments : yield CommentsModel.find( { 'product_id' :  req.params.id }).exec()
+        };
+    });
+    getData.then( function(result){ // result 는 위에서 return 하는 데이터와 일치
+        res.render('admin/productsDetail', { product: result.product , comments : result.comments });
+    });
+});
+
+
 // 받는 쪽에서 token을 넣어줌. csrfToken 변수 값에 req.csrfToken() 초기화.
 router.get('/products/edit/:id', loginRequired, csrfProtection , function(req, res){
     //기존에 폼에 value안에 값을 셋팅하기 위해 만든다.
@@ -126,7 +148,7 @@ router.post('/products/edit/:id', loginRequired, upload.single('thumbnail') , cs
             name : req.body.name,
             thumbnail : (req.file) ? req.file.filename : product.thumbnail,
             price : req.body.price,
-            description : req.body.description,
+            description : req.body.description, 
             username : req.user.username,
             displayname : req.user.displayname
         };
@@ -163,6 +185,10 @@ router.post('/products/ajax_comment/delete', function(req, res){
     CommentsModel.remove({ id : req.body.comment_id } , function(err){
         res.json({ message : "success" });
     });
+});
+
+router.post('/products/ajax_summernote', loginRequired, upload.single('thumbnail'), function(req,res){
+    res.send( '/uploads/' + req.file.filename);
 });
 
 module.exports = router;

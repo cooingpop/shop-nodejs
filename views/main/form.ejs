@@ -3,12 +3,12 @@
      <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
         <table class="table table-bordered">
             <tr>
-                <th>제품명</th>
-                <td><input type="text" name="name" class="form-control" value="<%=contacts.name%>"/></td>
+                <th>제목</th>
+                <td><input type="text" name="name" class="form-control" value="<%=notice.name%>"/></td>
             </tr>
-            <tr>
-                <th>설명</th>
-                <td><input type="text" name="comment" class="form-control" value="<%=contacts.comment%>"/></td>
+            <tr>    
+                <th>내용</th>
+                <td><textarea rows="5" cols="30" name="contents" value="<%=notice.contents%>" ></textarea></td>
             </tr>
         </table>
         <button class="btn btn-primary">작성하기</button>
