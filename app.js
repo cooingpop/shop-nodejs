@@ -42,6 +42,10 @@ var accounts = require('./routes/accounts');
 var auth = require('./routes/auth');
 var home = require('./routes/home');
 var chat = require('./routes/chat');
+var products = require('./routes/products');
+var cart = require('./routes/cart');
+var checkout = require('./routes/checkout');
+
 
 var app = express();
 var port = 3000;
@@ -62,6 +66,8 @@ app.use(cookieParser());
 // 업로드폴더 path 추가   static 으로 
 app.use('/uploads', express.static('uploads'));
 
+// static path 추가
+app.use('/static', express.static('static'));
 
 //session 관련 셋팅
 
@@ -121,7 +127,9 @@ app.use('/auth', auth);
 // auth 라우팅을 사용할때 auth 파일을 참조
 app.use('/', home);
 app.use('/chat', chat);
-
+app.use('/products',products);
+app.use('/cart',cart);
+app.use('/checkout',checkout);
 
 
 var server = app.listen( port, function(){

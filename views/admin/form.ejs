@@ -51,7 +51,7 @@ $(document).ready(function(){
     });
 
     function sendFile(file, editor, welEditable) {
-        data = new FormData(); //
+        data = new FormData(); // 파일 업로드를 하기 위해 사용
         data.append("thumbnail", file); // 필드명, 파일
         $.ajax({
             data: data,
