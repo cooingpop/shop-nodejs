@@ -15,6 +15,7 @@ router.get('/' , function(req, res){
         //장바구니데이터
         var cartList = JSON.parse(unescape(req.cookies.cartList));
 
+        console.log(cartList);
         //총가격을 더해서 전달해준다.
         for( let key in cartList){
             totalAmount += parseInt(cartList[key].amount);

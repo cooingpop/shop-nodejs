@@ -1,7 +1,9 @@
 <% include ../header.ejs %>
     
 
+<% include ./sidebar.ejs %>
 
+<div class="col-sm-10">
     <div class="panel panel-default">
         <div class="panel-heading">
             상품명 : <%= product.name %>
@@ -51,6 +53,7 @@
 
     <a href="/admin/products" class="btn btn-default">목록으로</a>
     <a href="/admin/products/edit/<%=product.id%>" class="btn btn-primary">수정</a>
+</div>
 <script>
     (function(){
         $(document).ready(function() {

@@ -1,5 +1,8 @@
 <% include ../header.ejs %>
-    <form action="" method="post" enctype="multipart/form-data"> <!-- 이미지 업로드시 파일 타입 -->
+
+<% include ./sidebar.ejs %>
+<div class="col-sm-10">
+    <form action="" method="post" enctype="multipart/form-data" id="editForm"> <!-- 이미지 업로드시 파일 타입 -->
      <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
         <table class="table table-bordered">
             <tr>
@@ -21,7 +24,7 @@
             </tr>
             <tr>
                 <th>설명</th>
-<td>                                                                                 <!-- <%= %> 있는 것은  html 태그를 그대로 노출, <%- %>붙은건 태그를 제외시킴  -->      
+                <td>                                                                                 <!-- <%= %> 있는 것은  html 태그를 그대로 노출, <%- %>붙은건 태그를 제외시킴  -->      
                     <textarea name="description" class="form-control" id="summernote"><%-product.description%></textarea>
                     <!-- <input type="text" name="description" class="form-control" value="<%=product.description%>"/> -->
                 </td>
@@ -29,7 +32,7 @@
         </table>
         <button class="btn btn-primary">작성하기</button>
     </form>
-
+<div></div>
 <!-- 스타일관련 -->
 <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.6/summernote.css" rel="stylesheet">
 <!-- 자바스크립트관련 -->
@@ -48,6 +51,10 @@ $(document).ready(function(){
                 sendFile(files[0]); // 업로드할 이미지 0번째 1개
             }
         }
+    });
+
+    $('#editForm').submit(function(){
+        $('input[name=files]').remove();
     });
 
     function sendFile(file, editor, welEditable) {
